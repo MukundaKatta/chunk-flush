@@ -1,0 +1,15 @@
+[package]
+name = "chunk-flush"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Flush-on-newline buffer for streaming LLM output. Holds bytes until a newline or N millis pass, then yields a complete chunk. Zero deps."
+authors = ["Mukunda Rao Katta <mukunda.vjcs6@gmail.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/MukundaKatta/chunk-flush"
+homepage = "https://github.com/MukundaKatta/chunk-flush"
+documentation = "https://docs.rs/chunk-flush"
+readme = "README.md"
+keywords = ["stream", "flush", "buffer", "llm", "throttle"]
+categories = ["text-processing"]
+exclude = [".github/*", "target/*"]
