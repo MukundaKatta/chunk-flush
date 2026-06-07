@@ -26,8 +26,10 @@ pub struct Flusher {
 }
 
 impl Flusher {
-    /// Build a flusher with a max-pending cap. Beyond this many chars
-    /// the buffer auto-flushes even without a newline.
+    /// Build a flusher with a max-pending cap, measured in chars
+    /// (Unicode scalar values, not bytes). Once the buffer holds more
+    /// than this many chars it auto-flushes even without a newline, so
+    /// nothing ever lingers above the cap.
     pub fn new(max_pending_chars: usize) -> Self {
         Self {
             buf: String::new(),
@@ -43,7 +45,13 @@ impl Flusher {
         // (and including) the last newline.
         if let Some(last_nl) = self.buf.rfind('\n') {
             let split = last_nl + 1;
-            let out: String = self.buf.drain(..split).collect();
+            let mut out: String = self.buf.drain(..split).collect();
+            // If the leftover tail still exceeds the cap, flush it too
+            // so nothing lingers above the cap. We can only return a
+            // single chunk per push, so fold the residue into `out`.
+            if self.buf.chars().count() > self.max_pending_chars {
+                out.push_str(&self.flush());
+            }
             return Some(out);
         }
         // No newline yet — check the size cap.
